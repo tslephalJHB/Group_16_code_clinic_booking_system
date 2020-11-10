@@ -2,8 +2,9 @@
 set -e
 
 ROOT_PATH=~
-BUILD_PATH=test_api
-LIB_PATH=lib
+BUILD_PATH=group_project
+VENV=code_clinic
+filename=startup.py
 
 echo $ROOT_PATH
 
@@ -40,60 +41,51 @@ touch .config.group_16
 
 echo -e ''email = ' '$email'\n'campus = ' '$campus'\n'system = ' 'Linux-Debian'' > .config.group_16
 
-cat .config.group_16 | less
 
-
-read -p "Please enter a directory: " directory
-
-
-echo $directory
-
-if [ -d "$directory" ] 
+if [ -d "$BUILD_PATH" ] 
 then
-    echo "$directory exists." 
+    echo "$BUILD_PATH exists." 
 else
-    echo "Error: $directory does not exists."
+    echo "Error: $BUILD_PATH does not exists."
     echo "Creating your directory"
-    mkdir ./$directory
-    echo "$directory created"
+    mkdir ./$BUILD_PATH
+    echo "$BUILD_PATH created"
 fi
 
-cd $directory
+cd $BUILD_PATH
 
-read -p "Please enter a virtual environment you want to create: " env
-
-echo "Entered $ROOT_PATH/$directory"
-
-if [ -d "$env" ] 
+if [ -d "$VENV" ] 
 then
-    echo "Virtual environment exists." 
+    echo "$VENV virtual environment exists." 
 else
-    echo "Error: $directory does not exists."
+    echo "Error: $BUILD_PATH does not exists."
     echo "Creating your virtual environment"
-    python3 -m venv $env
-    echo "Finished creating $env virtual environment"
+    python3 -m venv $VENV
+    echo "Finished creating $VENV environment"
 fi
 
-source $env/bin/activate
-echo "Started the venv
-Beginning googleapi-client installation"
-pip install google-api-python-client --quiet
-echo "Done installing googleapi-client"
+source $VENV/bin/activate
 
-if [ -f "$credentials.json" ] 
+echo "Started the venv"
+
+pip install google-api-python-client --quiet
+
+file=$(find ~ -name "credentials.json")
+
+echo $file
+
+if [ -f "credentials.json" ] 
 then
     echo "credentials.json exists." 
 else
-    echo "Error: credentials.jsony does not exists."
+    echo "Error: credentials.json does not exists."
+    echo $file
     echo "Fetching credentials.json"
-    cd ; cd Downloads
-    cp credentials.json ~/$directory
+    cp $file ~/$BUILD_PATH
     echo "Fetched credentials.json"
-    cd ; cd $directory
-    echo "Back at $ROOT_PATH/$directory"
+    echo "Back at $ROOT_PATH/$BUILD_PATH"
 fi
-
-read -p "Please name your pyhton executable file name: " filename
+echo line 91
 
 if [ -f "$filename" ] 
 then
@@ -103,10 +95,10 @@ else
     echo "Fetching $filename"
     cd ; cd Group_16_code_clinic_booking_system
     cp make_a_booking.py $filename
-    cp $filename ~/$directory
+    cp $filename ~/$BUILD_PATH
     echo "Fetched $filename"
-    cd ; cd $directory
-    echo "Back at $ROOT_PATH/$directory"
+    cd ; cd $BUILD_PATH
+    echo "Back at $ROOT_PATH/$BUILD_PATH"
 fi
 
 pkg="google_auth_oauthlib"
@@ -120,11 +112,17 @@ else
 fi
 
 echo "Beginning students calendar sync"
+
 python3 $filename
+
 echo "Done with calendar sync"
 
 echo "Removing token for new calendar sync on startup"
+
 rm token.pickle
+
 echo "Token removed"
+
 cd
-echo -e .zshrc >> alias clinic='clear; ~/./setup.sh
+
+echo -e ''alias clinic=''clear; ~/./setup.sh'' >> .zshrc

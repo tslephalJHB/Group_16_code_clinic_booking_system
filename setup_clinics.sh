@@ -1,4 +1,4 @@
-file='clear; ~/./setup.sh'
+file='clear; ~/Group_16_code_clinic_booking_system/./setup.sh'
 chmod +x setup.sh
-cd
-echo 'alias clinics='\'$file\' >> .zshrc
+echo 'alias clinics='\'$file\' >> ~/.zshrc
+. ~/.zshrc
