@@ -7,14 +7,17 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google.auth.transport.requests import Request
 
+CLIENT_SECRET_FILE = 'credentials.json'
+API_NAME = 'calendar'
+API_VERSION = 'v3'
+SCOPES = ['https://www.googleapis.com/auth/calendar']
+
 
 def create_Service(client_secret_file, api_name, api_version, *scopes):
-    print(client_secret_file, api_name, api_version, scopes, sep='-')
     CLIENT_SECRET_FILE = client_secret_file
     API_SERVICE_NAME = api_name
     API_VERSION = api_version
     SCOPES = [scope for scope in scopes[0]]
-    print(SCOPES)
     
     cred = None
 
@@ -36,7 +39,6 @@ def create_Service(client_secret_file, api_name, api_version, *scopes):
             pickle.dump(cred, token)
 
     try:
-        print(cred)
         service = build(API_SERVICE_NAME, API_VERSION, credentials=cred)
         print(API_SERVICE_NAME, 'service created successfully')
         return service
@@ -49,41 +51,45 @@ def convert_to_RFC_datetime(year=1900, month=1, day=1, hour=0, minute=0):
     dt = datetime.datetime(year, month, day, hour, minute, 0).isoformat() + 'Z'
     return dt
 
-CLIENT_SECRET_FILE = 'credentials.json'
-API_NAME = 'calendar'
-API_VERSION = 'v3'
-SCOPES = ['https://www.googleapis.com/auth/calendar']
-service = create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
-
 
 def create_event():
     """Create an event
     """
-    print('Creating event...')
+    print('Opening a slot...')
 
-    hour_adjustment = 2
+    hour_adjustment = -2
+    date = input('Enter date for the open slot. (yyyymmdd)')
+    time = input('Enter start time of the open slot. (hhmm)')
+    year = int(date[:4])
+    month = int(date[4:6])
+    date = int(date[6:8])
+    hour = int(time[:2])
+    minute = int(time[2:])
+    end_hour = hour
+    end_minute = minute + 30
+
+    if end_minute > 60:
+        end_hour = hour + 1
+        end_minute = (minute + 30) - 60
+    
     event_request_body = {
         'start':{
-           'dateTime': convert_to_RFC_datetime(int(input('Insert year: ')), int(input('Insert month: ')), int(input('Insert date: ')), 14 + hour_adjustment, 30),
-            'timeZone': 'Africa/Johannesburg'
-            },
-        'end':{
-            'dateTime': convert_to_RFC_datetime(int(input('Insert year: ')), int(input('Insert month: ')), int(input('Insert date: ')), 14 + hour_adjustment, 30),
+            'dateTime': convert_to_RFC_datetime(year, month, date, hour + hour_adjustment, minute),
             'timeZone': 'Africa/Johannesburg'
         },
-        'summary': input('Type of enevent: '),
-        'description': input('Description of event: '),
+        'end':{
+            'dateTime': convert_to_RFC_datetime(year, month, date, end_hour + hour_adjustment, end_minute),
+            'timeZone': 'Africa/Johannesburg'
+        },
+        'summary': 'Open Slot',
+        'description': 'one-on-one sessions with a more experienced person who can advise on the coding problem at hand',
         'colorId': 5,
         'transparency': 'opaque',
-        'visibility': 'private',
-        'location': input('Location of event: '),
-        'attendees': [
-            {'email': 'tshiamo.lephale@gmail.com'},
-            {'email': 'nmaguban@student.wethinkcode.co.za'}
-        ],
+        'visibility': 'public',
+        'location': 'Johannesburg, GP',
     }
 
-    maxAttendees = 2
+    maxAttendees = 3
     sendNotification = True
     sendUpdate = 'none'
     supportsAttachments = True
@@ -95,9 +101,9 @@ def create_event():
         supportsAttachments=supportsAttachments,
         body=event_request_body
     ).execute()
-
-    pprint(response)
+    print('Slot successfully created.')
 
 
 if __name__ == "__main__":
+    service = create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
     create_event()
