@@ -58,8 +58,8 @@ def create_event():
     print('Opening a slot...')
 
     hour_adjustment = -2
-    date = input('Enter date for the open slot. (yyyymmdd)')
-    time = input('Enter start time of the open slot. (hhmm)')
+    date = input('Enter date for the open slot. (yyyymmdd): ')
+    time = input('Enter start time of the open slot. (hhmm): ')
     year = int(date[:4])
     month = int(date[4:6])
     date = int(date[6:8])
@@ -102,8 +102,43 @@ def create_event():
         body=event_request_body
     ).execute()
     print('Slot successfully created.')
+    pprint(response)
+    
+    return response
+
+
+def update_event(reponse):
+    eventId = response['id']
+    email = input('Enter your email address: ')
+    event_request_body = {
+        'start':{
+            'dateTime': reponse['start']['dateTime'],
+            'timeZone': 'Africa/Johannesburg'
+        },
+        'end':{
+            'dateTime': response['end']['dateTime'],
+            'timeZone': 'Africa/Johannesburg'
+        },
+        'attendees': [
+            {'email': email}
+        ],
+        'summary': 'Booked Slot',
+        'description': 'one-on-one sessions with a more experienced person who can advise on the coding problem at hand',
+        'colorId': 4,
+        'transparency': 'opaque',
+        'visibility': 'public',
+        'location': 'Johannesburg, GP',
+    }
+
+    update = service.events().update(
+        calendarId='primary',
+        eventId=eventId,
+        body=event_request_body).execute()
+
+    pprint(update)
 
 
 if __name__ == "__main__":
     service = create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
-    create_event()
+    response = create_event()
+    update_event(response)
