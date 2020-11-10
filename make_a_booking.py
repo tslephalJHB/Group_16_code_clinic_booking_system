@@ -64,19 +64,19 @@ def create_event():
     hour_adjustment = 2
     event_request_body = {
         'start':{
-            'dateTime': convert_to_RFC_datetime(2020, 11, 10, 12 + hour_adjustment, 30),
+           'dateTime': convert_to_RFC_datetime(int(input('Insert year: ')), int(input('Insert month: ')), int(input('Insert date: ')), 14 + hour_adjustment, 30),
             'timeZone': 'Africa/Johannesburg'
-        },
+            },
         'end':{
-            'dateTime': convert_to_RFC_datetime(2020, 11, 10, 14 + hour_adjustment, 30),
+            'dateTime': convert_to_RFC_datetime(int(input('Insert year: ')), int(input('Insert month: ')), int(input('Insert date: ')), 14 + hour_adjustment, 30),
             'timeZone': 'Africa/Johannesburg'
         },
-        'summary': 'Family lunch',
-        'description': 'Having lunch with the parents',
+        'summary': input('Type of enevent: '),
+        'description': input('Description of event: '),
         'colorId': 5,
         'transparency': 'opaque',
         'visibility': 'private',
-        'location': 'Johannesburg, GP',
+        'location': input('Location of event: '),
         'attendees': [
             {'email': 'tshiamo.lephale@gmail.com'},
             {'email': 'nmaguban@student.wethinkcode.co.za'}
