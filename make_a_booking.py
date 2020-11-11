@@ -107,38 +107,6 @@ def create_event():
     return response
 
 
-def update_event(reponse):
-    eventId = response['id']
-    email = input('Enter your email address: ')
-    event_request_body = {
-        'start':{
-            'dateTime': reponse['start']['dateTime'],
-            'timeZone': 'Africa/Johannesburg'
-        },
-        'end':{
-            'dateTime': response['end']['dateTime'],
-            'timeZone': 'Africa/Johannesburg'
-        },
-        'attendees': [
-            {'email': email}
-        ],
-        'summary': 'Booked Slot',
-        'description': 'one-on-one sessions with a more experienced person who can advise on the coding problem at hand',
-        'colorId': 4,
-        'transparency': 'opaque',
-        'visibility': 'public',
-        'location': 'Johannesburg, GP',
-    }
-
-    update = service.events().update(
-        calendarId='primary',
-        eventId=eventId,
-        body=event_request_body).execute()
-
-    pprint(update)
-
-
 if __name__ == "__main__":
     service = create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
     response = create_event()
-    update_event(response)
