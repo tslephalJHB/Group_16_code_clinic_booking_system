@@ -1,0 +1,13 @@
+Client ID:
+
+574617708857-rf9jc1pk5cara0om40nvtk5u9j9hffpe.apps.googleusercontent.com
+
+Client Secret:
+VWLsCj4Zvpb7eFcI_adxIvwu
+
+
+You can always manage your API credentials and usage later in the API Console:
+https://console.developers.google.com/apis/dashboard?project=codeclinic-booki-1604565425225&authuser=0&pli=1
+
+GoogleAPI Playground:
+https://developers.google.com/oauthplayground/?code=4/5wE9k-P9x2vxHAbGvXQiq2gDOskttyPUTmvA4N4bbv9Q4dQSevPjIMw5C8LaR-XC9Fa0rXsjRG7zqiX2IvSLgjA&scope=https://www.googleapis.com/auth/calendar.events
