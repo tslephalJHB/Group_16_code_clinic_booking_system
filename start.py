@@ -10,7 +10,7 @@ from google.auth.transport.requests import Request
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
 
-def main():
+def service():
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
@@ -38,4 +38,4 @@ def main():
     return service
 
 if __name__ == "__main__":
-    main()
+    service()

@@ -65,4 +65,4 @@ def book_slot(service, username, eventId, start_dateTime, end_dateTime):
 
 if __name__ == "__main__":
     service = create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
-    update_event('73p3mp4esvp7219211ll9mtl58','2020-11-12T12:45:00+02:00','2020-11-12T13:15:00+02:00')
+    book_slot(service,'fapatel','73p3mp4esvp7219211ll9mtl58','2020-11-12T12:45:00+02:00','2020-11-12T13:15:00+02:00')
