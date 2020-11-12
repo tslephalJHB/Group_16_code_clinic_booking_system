@@ -113,12 +113,9 @@ def open_slot(date,time,username):
     ).execute()
     print('Slot successfully created.')
 
-    
-
     return response
 
 
 if __name__ == "__main__":
     service = create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
     print(open_slot('20201113','1245','tslephal'))
-
