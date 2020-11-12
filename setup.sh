@@ -7,9 +7,8 @@ VENV=code_clinic
 filename=make_a_booking.py
 help_file=help.txt
 calendar_file=view_calendar.py
+book_slot=update_event.py
 
-echo $ROOT_PATH
-echo
 if [ -f "*.piCkle" ]
 then
 	echo 'token exists'
@@ -20,18 +19,9 @@ else
 	then
 		email=$(grep 'username' ~/.config/wtc/config.yml | cut -d ' ' -f 2)
 	else
-		echo 'Email'
 		email=${reply}@student.wethinkcode.co.za
 	fi
-	echo $email
-	python3 start.py
-	if [[ $email == $user@student.wethinkcode.co.za ]]
-	then
-		echo welcome $user
-	else
-		rm *pickle
-		python3 start.py
-	fi
+	echo "Welcome $email to code clinics"
 	campuses='jhb johannesburg'
 	read -p 'enter your campus: ' campus
 
@@ -55,7 +45,7 @@ else
 
 	touch .config.yml
 
-	echo -e ''email = ' '$email'\n'campus = ' '$campus'\n'system = ' '$(uname -a | cut -d" " -f1,3,11,12)'' > .config.group_16
+	echo -e ''email = ' '$email'\n'campus = ' '$campus'\n'system = ' '$(uname -a | cut -d" " -f1,3,11,12)'' > .config.yml
 fi
 
 
@@ -84,12 +74,14 @@ fi
 source $VENV/bin/activate
 
 echo "Started the venv"
-
-pip install google-api-python-client --quiet
+if pip search google-api-python-client --quiet
+then
+	echo api exists
+else
+	pip install google-api-python-client --quiet
+fi
 
 file=$(find ~ -name "credentials.json")
-
-echo $file
 
 if [ -f "credentials.json" ] 
 then
@@ -103,18 +95,19 @@ else
     echo "Back at $ROOT_PATH/$BUILD_PATH"
 fi
 
-if [ -f "$filename" ] 
+if [[ -f "$filename" && -f "start.py" && -f "$book_slot" && -f "$calendar_file" ]] 
 then
-    echo "$filename exists." 
+    echo "Files exists." 
 else
     echo "Error: $filename does not exists."
     echo "Fetching $filename"
     cd ; cd Group_16_code_clinic_booking_system
-    cp make_a_booking.py $filename
     cp $filename ~/$BUILD_PATH
-    echo "Fetched $filename"
+    cp $calendar_file ~/$BUILD_PATH
+    cp $book_slot ~/$BUILD_PATH
+    cp start.py ~/$BUILD_PATH
+    echo "Fetched files"
     cd ; cd $BUILD_PATH
-    echo "Back at $ROOT_PATH/$BUILD_PATH"
 fi
 
 if [ -f "help.txt" ]
@@ -166,13 +159,13 @@ then
 		do
 			echo "Invalid command"
 			declare -A action
-			read -p "Would you like to book a slot [book slot] or view calendar [view calendar] or see available commands for student[help]?: " action
+			read -p "Would you like to book a slot [book_slot] or view calendar [view_calendar] or see available commands for student[help]?: " action
 			echo $action
 		done
-		if [ $student == 'book slot' ]
+		if [ $student == 'book_slot' ]
 		then
-			python3 $filename
-		elif [ $student == 'view calendar' ]
+			python3 $book_slot
+		elif [ $student == 'view_calendar' ]
 		then
 			python3 $calendar_file
 		elif [ $student == 'help' ]
@@ -182,34 +175,35 @@ then
 		read -p "Would you like to book a slot [book_slot] or view calendar [view_calendar] or see available commands for student[help] or shut down the system[off]?: " student
 	done
 else
-	read -p "Would you like to book a slot [book_slot] or view calendar [view_calendar] or see available commands for student[help] or shut down the system[off]?: "  student
+	read -p "Would you like to book a slot [create_slot] or view calendar [view_calendar] or see available commands for student[help] or shut down the system[off]?: "  volunteer
 	echo  This is your array $student
-	while ! [ $student == 'off' ]
+	while ! [ $volunteer == 'off' ]
 	do
-		while ! [[ $student == 'off' || $student == 'help' || $student == 'book_slot' || $student == 'view_calendar' ]]
+		while ! [[ $volunteer == 'off' || $volunteer == 'help' || $volunteer == 'create_slot' || $volunteer == 'view_calendar' ]]
 		do
 			echo "Invalid command"
 			declare -A action
-			read -p "Would you like to book a slot [book slot] or view calendar [view calendar] or see available commands for student[help]?: " action
+			read -p "Would you like to book a slot [create_slot] or view calendar [view_calendar] or see available commands for student[help]?: " volunteer
 			echo $action
 		done
-		if [ $student == 'book slot' ]
+		if [ $volunteer == 'create_slot' ]
 		then
 			python3 $filename
-		elif [ $student == 'view calendar' ]
+		elif [ $volunteer == 'view_calendar' ]
 		then
 			python3 $calendar_file
-		elif [ $student == 'help' ]
+		elif [ $volunteer == 'help' ]
 		then
 			cat help.txt
 		fi
-		read -p "Would you like to book a slot [book_slot] or view calendar [view_calendar] or see available commands for student[help] or shut down the system[off]?: " student
+		read -p "Would you like to book a slot [create_slot] or view calendar [view_calendar] or see available commands for student[help] or shut down the system[off]?: " volunteer
 	done
 fi
 
 echo "Done with calendar sync"
 
 read -p "Do you wish to remove your token?: " com
+
 if [ $com == 'yes' ]
 then
 	echo "Removing token for new calendar sync on startup"
