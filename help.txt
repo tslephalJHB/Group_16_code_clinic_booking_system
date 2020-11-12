@@ -1,0 +1,13 @@
+
+if your a student:
+
+	book_slot: For a student to book an available slot
+	view_calendar: To view both the student's calendar and code clinics calendar
+	help: To view available commands for student
+
+if your a volunteer:
+
+	create_slot: For the volunteer to create a slot
+	view_calendar: To view both the volunteer's calendar and the code clinics calendar
+	help: To view available commands for volunteer
+

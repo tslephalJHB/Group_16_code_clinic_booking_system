@@ -4,42 +4,59 @@ set -e
 ROOT_PATH=~
 BUILD_PATH=group_project
 VENV=code_clinic
-filename=startup.py
+filename=make_a_booking.py
+help_file=help.txt
+calendar_file=view_calendar.py
 
 echo $ROOT_PATH
-
-read -p 'Enter your wtc username: ' reply
-
-user=$(who | cut -d ' ' -f 1)
-if [ $user == '$reply' ]
+echo
+if [ -f "*.piCkle" ]
 then
-	email=${grep 'username' ~/.config/wtc/config.yml | cut -d ' ' -f 2}
+	echo 'token exists'
 else
-	echo 'Email'
-	email=${reply}@student.wethinkcode.co.za
-fi
-echo $email
-
-campuses='jhb johannesburg'
-
-read -p 'enter your campus: ' campus
-
-for value in $campuses
-do
-	if [ $value = $campus ]
+	read -p 'Enter your wtc username: ' reply
+	user=$(who | cut -d ' ' -f 1)
+	if [[ $user == '$reply' || -z "$reply" ]]
 	then
-		echo 'Campus'
-		your_campus=$campus
+		email=$(grep 'username' ~/.config/wtc/config.yml | cut -d ' ' -f 2)
+	else
+		echo 'Email'
+		email=${reply}@student.wethinkcode.co.za
 	fi
-done
+	echo $email
+	python3 start.py
+	if [[ $email == $user@student.wethinkcode.co.za ]]
+	then
+		echo welcome $user
+	else
+		rm *pickle
+		python3 start.py
+	fi
+	campuses='jhb johannesburg'
+	read -p 'enter your campus: ' campus
 
-echo $your_campus
+	for value in $campuses
+	do
+		while ! [[ $campus == 'jhb' || $campus == 'johannesburg' || $campus == 'JHB' || $camous == 'JOHANNESBURG' ]]
+		do
+			echo "Invalid campus"
+			read -p 'enter your campus: ' campus
+		done
+		if [ $value = $campus ]
+		then
+			echo 'Campus'
+			your_campus=$campus
+		fi
+	done
 
-cd
+	echo $your_campus
 
-touch .config.group_16
+	cd
 
-echo -e ''email = ' '$email'\n'campus = ' '$campus'\n'system = ' 'Linux-Debian'' > .config.group_16
+	touch .config.yml
+
+	echo -e ''email = ' '$email'\n'campus = ' '$campus'\n'system = ' '$(uname -a | cut -d" " -f1,3,11,12)'' > .config.group_16
+fi
 
 
 if [ -d "$BUILD_PATH" ] 
@@ -85,7 +102,6 @@ else
     echo "Fetched credentials.json"
     echo "Back at $ROOT_PATH/$BUILD_PATH"
 fi
-echo line 91
 
 if [ -f "$filename" ] 
 then
@@ -101,6 +117,24 @@ else
     echo "Back at $ROOT_PATH/$BUILD_PATH"
 fi
 
+if [ -f "help.txt" ]
+then
+	echo "help file exists"
+else
+    cd ; cd Group_16_code_clinic_booking_system
+    cp $help_file ~/$BUILD_PATH
+    cd ; cd $BUILD_PATH
+fi
+
+if [ -f "$calendar_file" ]
+then
+	echo "calendar file  exists"
+else
+    cd ; cd Group_16_code_clinic_booking_system
+    cp $calendar_file ~/$BUILD_PATH
+    cd ; cd $BUILD_PATH
+fi
+
 pkg="google_auth_oauthlib"
 
 if pip search $pkg --quiet
@@ -113,16 +147,72 @@ fi
 
 echo "Beginning students calendar sync"
 
-python3 $filename
+read -p "Are you a student or volunteer?: " comm
+
+while ! [[ $comm == 'student' || $comm == 'volunteer' ]]
+do
+	echo "Invalid choice"
+	read -p "Are you a student or volunteer?: " comm
+done
+
+if [ $comm == 'student' ]
+then
+	declare -A student
+	read -p "Would you like to book a slot [book_slot] or view calendar [view_calendar] or see available commands for student[help] or shut down the system[off]?: "  student
+	echo  This is your array $student
+	while ! [ $student == 'off' ]
+	do
+		while ! [[ $student == 'off' || $student == 'help' || $student == 'book_slot' || $student == 'view_calendar' ]]
+		do
+			echo "Invalid command"
+			declare -A action
+			read -p "Would you like to book a slot [book slot] or view calendar [view calendar] or see available commands for student[help]?: " action
+			echo $action
+		done
+		if [ $student == 'book slot' ]
+		then
+			python3 $filename
+		elif [ $student == 'view calendar' ]
+		then
+			python3 $calendar_file
+		elif [ $student == 'help' ]
+		then
+			cat help.txt
+		fi
+		read -p "Would you like to book a slot [book_slot] or view calendar [view_calendar] or see available commands for student[help] or shut down the system[off]?: " student
+	done
+else
+	read -p "Would you like to book a slot [book_slot] or view calendar [view_calendar] or see available commands for student[help] or shut down the system[off]?: "  student
+	echo  This is your array $student
+	while ! [ $student == 'off' ]
+	do
+		while ! [[ $student == 'off' || $student == 'help' || $student == 'book_slot' || $student == 'view_calendar' ]]
+		do
+			echo "Invalid command"
+			declare -A action
+			read -p "Would you like to book a slot [book slot] or view calendar [view calendar] or see available commands for student[help]?: " action
+			echo $action
+		done
+		if [ $student == 'book slot' ]
+		then
+			python3 $filename
+		elif [ $student == 'view calendar' ]
+		then
+			python3 $calendar_file
+		elif [ $student == 'help' ]
+		then
+			cat help.txt
+		fi
+		read -p "Would you like to book a slot [book_slot] or view calendar [view_calendar] or see available commands for student[help] or shut down the system[off]?: " student
+	done
+fi
 
 echo "Done with calendar sync"
 
-echo "Removing token for new calendar sync on startup"
-
-rm token.pickle
-
-echo "Token removed"
-
-cd
-
-echo -e ''alias clinic=''clear; ~/./setup.sh'' >> .zshrc
+read -p "Do you wish to remove your token?: " com
+if [ $com == 'yes' ]
+then
+	echo "Removing token for new calendar sync on startup"
+	rm *pickle
+	echo "Token removed"
+fi
