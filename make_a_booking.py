@@ -7,6 +7,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google.auth.transport.requests import Request
 
+
 CLIENT_SECRET_FILE = 'credentials.json'
 API_NAME = 'calendar'
 API_VERSION = 'v3'
@@ -52,14 +53,13 @@ def convert_to_RFC_datetime(year=1900, month=1, day=1, hour=0, minute=0):
     return dt
 
 
-def create_event():
-    """Create an event
+def open_slot(date,time,username):
+    """The function opens a slot for the volunteer.
     """
     print('Opening a slot...')
 
+    email = username+'@student.wethinkcode.co.za'
     hour_adjustment = -2
-    date = input('Enter date for the open slot. (yyyymmdd): ')
-    time = input('Enter start time of the open slot. (hhmm): ')
     year = int(date[:4])
     month = int(date[4:6])
     date = int(date[6:8])
@@ -81,12 +81,21 @@ def create_event():
             'dateTime': convert_to_RFC_datetime(year, month, date, end_hour + hour_adjustment, end_minute),
             'timeZone': 'Africa/Johannesburg'
         },
+        'conferenceData': {
+            'createRequest': {
+                'requestId': 'hangoutsMeet'
+                },
+        },
         'summary': 'Open Slot',
         'description': 'one-on-one sessions with a more experienced person who can advise on the coding problem at hand',
         'colorId': 5,
         'transparency': 'opaque',
         'visibility': 'public',
         'location': 'Johannesburg, GP',
+        'attendees':[
+            {'email': email},
+            {'email': 'cliniccoding@gmail.com'}
+        ]
     }
 
     maxAttendees = 3
@@ -96,17 +105,20 @@ def create_event():
 
     response = service.events().insert(
         calendarId="primary",
+        conferenceDataVersion=1,
         maxAttendees=maxAttendees,
         sendUpdates="all",
         supportsAttachments=supportsAttachments,
         body=event_request_body
     ).execute()
     print('Slot successfully created.')
-    pprint(response)
+
     
+
     return response
 
 
 if __name__ == "__main__":
     service = create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
-    response = create_event()
+    print(open_slot('20201113','1245','tslephal'))
+
