@@ -6,7 +6,7 @@ from google_auth_oauthlib.flow import Flow, InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google.auth.transport.requests import Request
-from make_a_booking import create_Service, convert_to_RFC_datetime
+from make_a_booking import create_Service, convert_to_RFC_datetime,get_calendar,is_int
 import start
 
 service = start.service
@@ -16,8 +16,10 @@ API_NAME = 'calendar'
 API_VERSION = 'v3'
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
-def book_slot(service, username, eventId, start_dateTime, end_dateTime):
 
+def book_slot(service, username, eventId, start_dateTime, end_dateTime, creatorId):
+    print('Booking Open Slot...')
+    organizer = creatorId.strip()
     email = username+'@student.wethinkcode.co.za'
     event_request_body = {
         'start':{
@@ -29,11 +31,21 @@ def book_slot(service, username, eventId, start_dateTime, end_dateTime):
             'timeZone': 'Africa/Johannesburg'
         },
         'attendees': [
-            {'email': email},
-            {'email': 'cliniccoding@gmail.com'}
+            {
+                'email': email,
+                'responseStatus': 'accepted'
+                },
+            {
+                'email': 'cliniccoding@gmail.com',
+                'responseStatus': 'accepted'
+                },
+            {
+                'email': organizer,
+                'responseStatus': 'accepted'
+                }
         ],
         'summary': 'Booked Slot',
-        'description': input('What kind of do you need? '),
+        'description': input('What do you want help in? '),
         'colorId': 4,
         'transparency': 'opaque',
         'visibility': 'public',
@@ -52,17 +64,35 @@ def book_slot(service, username, eventId, start_dateTime, end_dateTime):
         body=event_request_body).execute()
 
     print('Slot booking successful.')
-
-    # else:
-    #     date = input('Enter date for the open slot. (yyyymmdd): ')
-    #     time = input('Enter start time of the open slot. (hhmm): ')
-
-    #     response = create_event(date, time, username)
-        
-    #     open_slots = open('open_slots.txt', 'a')
-    #     open_slots.write(date + time)
-    #     open_slots.close()
+    return True
 
 if __name__ == "__main__":
     service = create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
-    book_slot(service,'fapatel','73p3mp4esvp7219211ll9mtl58','2020-11-12T12:45:00+02:00','2020-11-12T13:15:00+02:00')
+    get_calendar(service)
+    date = input('Please enter date: ')
+    year = date[:4]
+    month = date[4:6]
+    date = date[6:8]
+    date = year+'-'+month+'-'+date
+
+    event_list = open('events.csv', 'r').readlines()
+    open_slots = [event for event in event_list if ('Open Slot' in event and date in event)]
+
+    open_list = []
+    count = 1
+
+    print('Available slots:')
+    for event in open_slots:
+        event = event.split(',')
+        open_list.append(event)
+        print(str(count)+'. '+event[0]+' '+event[1][:10]+' '+event[1][11:16])
+        count += 1
+
+    while True:    
+        slot = int(input('Select preferred slot: '))
+        if not is_int(slot) or slot not in range(1, len(open_list)+1):
+            print(f'Sorry, you picked an invalid slot. Please select 1 - {len(open_list)}')
+        else:
+            break
+
+    do_next = book_slot(service, username, open_list[slot - 1][3], open_list[slot - 1][1], open_list[slot - 1][2], open_list[slot - 1][4])
