@@ -6,7 +6,7 @@ BUILD_PATH=group_project
 VENV=code_clinic
 filename=make_a_booking.py
 help_file=help.txt
-calendar_file=view_calendar.py
+calendar_file=view_calender.py
 book_slot=update_event.py
 
 if [ -f "*.piCkle" ]
@@ -21,25 +21,22 @@ else
 	else
 		email=${reply}@student.wethinkcode.co.za
 	fi
-	echo "Welcome $email to code clinics"
-	campuses='jhb johannesburg'
+	echo "Welcome $user to code clinics"
+	campuses='jhb johannesburg JOHANNESBURG JHB'
 	read -p 'enter your campus: ' campus
 
 	for value in $campuses
 	do
-		while ! [[ $campus == 'jhb' || $campus == 'johannesburg' || $campus == 'JHB' || $camous == 'JOHANNESBURG' ]]
+		while ! [[ $campus == 'jhb' || $campus == 'johannesburg' || $campus == 'JHB' || $campus == 'JOHANNESBURG' ]]
 		do
 			echo "Invalid campus"
 			read -p 'enter your campus: ' campus
 		done
 		if [ $value = $campus ]
 		then
-			echo 'Campus'
 			your_campus=$campus
 		fi
 	done
-
-	echo $your_campus
 
 	cd
 
@@ -150,16 +147,17 @@ done
 
 if [ $comm == 'student' ]
 then
-	declare -A student
-	read -p "Would you like to book a slot [book_slot] or view calendar [view_calendar] or see available commands for student[help] or shut down the system[off]?: "  student
-	echo  This is your array $student
+	echo "These are your available commands:
+				 book_slot
+				 view_calendar
+				 help"
+	read -p "Would you like to do?: "  student
 	while ! [ $student == 'off' ]
 	do
 		while ! [[ $student == 'off' || $student == 'help' || $student == 'book_slot' || $student == 'view_calendar' ]]
 		do
 			echo "Invalid command"
-			declare -A action
-			read -p "Would you like to book a slot [book_slot] or view calendar [view_calendar] or see available commands for student[help]?: " action
+			read -p "Would you like to do?: " action
 			echo $action
 		done
 		if [ $student == 'book_slot' ]
@@ -172,18 +170,20 @@ then
 		then
 			cat help.txt
 		fi
-		read -p "Would you like to book a slot [book_slot] or view calendar [view_calendar] or see available commands for student[help] or shut down the system[off]?: " student
+		read -p "Would you like to do?: " student
 	done
 else
-	read -p "Would you like to book a slot [create_slot] or view calendar [view_calendar] or see available commands for student[help] or shut down the system[off]?: "  volunteer
-	echo  This is your array $student
+	echo "These are your available commands:
+                                 create_slot
+                                 view_calendar
+                                 help"
+	read -p "Would you like to do?: "  volunteer
 	while ! [ $volunteer == 'off' ]
 	do
 		while ! [[ $volunteer == 'off' || $volunteer == 'help' || $volunteer == 'create_slot' || $volunteer == 'view_calendar' ]]
 		do
 			echo "Invalid command"
-			declare -A action
-			read -p "Would you like to book a slot [create_slot] or view calendar [view_calendar] or see available commands for student[help]?: " volunteer
+			read -p "Would you like to do?: " volunteer
 			echo $action
 		done
 		if [ $volunteer == 'create_slot' ]
@@ -196,7 +196,7 @@ else
 		then
 			cat help.txt
 		fi
-		read -p "Would you like to book a slot [create_slot] or view calendar [view_calendar] or see available commands for student[help] or shut down the system[off]?: " volunteer
+		read -p "Would you like to do?: " volunteer
 	done
 fi
 
