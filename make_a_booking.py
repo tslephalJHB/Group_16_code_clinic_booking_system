@@ -14,6 +14,33 @@ API_VERSION = 'v3'
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 
+def get_calendar(service):
+    
+    now_n =  datetime.datetime.today()
+    now = now_n.isoformat() + 'Z' # 'Z' indicates UTC time
+    end_date_n= now_n + datetime.timedelta(7)
+    end_date = end_date_n.isoformat() + 'Z'
+
+    events_result = service.events().list(calendarId='cliniccoding@gmail.com',timeMin=now,timeMax=end_date,
+                                        singleEvents=True,
+                                        orderBy='startTime').execute()
+    events = events_result.get('items', [])
+    # Saving events into a pickle file
+    with open("events_clinic.pkl","wb") as cal_clinic_events:
+        pickle.dump(events,cal_clinic_events)
+    
+    # Load pickle files
+    with open("events_clinic.pkl","rb") as cal_clinic_events:
+        new_clinic_data = pickle.load(cal_clinic_events)
+
+    slot_list = open('events.csv', 'w')
+    
+    for event in new_clinic_data:
+        slot_list.write(event['summary']+','+event['start']['dateTime']+','+event['end']['dateTime']+','+event['id']+','+event['creator']['email']+'\n')
+    
+    slot_list.close()
+
+
 def create_Service(client_secret_file, api_name, api_version, *scopes):
     CLIENT_SECRET_FILE = client_secret_file
     API_SERVICE_NAME = api_name
@@ -53,7 +80,25 @@ def convert_to_RFC_datetime(year=1900, month=1, day=1, hour=0, minute=0):
     return dt
 
 
-def open_slot(date,time,username):
+def get_date():
+    date = input('Please enter date[yyyymmdd]: ')
+    return date
+
+
+def is_int(value):
+    """
+    Tests if the string value is an int or not
+    :param value: a string value to test
+    :return: True if it is an int
+    """
+    try:
+        int(value)
+        return True
+    except ValueError:
+        return False
+
+
+def open_slot(service,date,time,username):
     """The function opens a slot for the volunteer.
     """
     print('Opening a slot...')
@@ -118,4 +163,33 @@ def open_slot(date,time,username):
 
 if __name__ == "__main__":
     service = create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
-    print(open_slot('20201113','1245','tslephal'))
+    get_calendar(service)
+    date = get_date()
+    year = date[:4]
+    month = date[4:6]
+    pseudo_date = date[6:8]
+    pseudodate = year+'-'+month+'-'+pseudo_date
+
+    event_list = open('events.csv', 'r').readlines()
+    open_slots = [event for event in event_list if pseudodate in event]
+
+    open_list = []
+    count = 1
+
+    print('You can not choose the following times:')
+    for event in open_slots:
+        event = event.split(',')
+        open_list.append(event[1][11:16])
+        print(str(count)+'. '+event[1][11:16])
+        count += 1
+
+    while True:
+        time = input("Input start time for the slot[hhmm]: ")
+        pseudo_time = time[:2]+':'+time[2:]
+
+        if not is_int(time) or pseudo_time in open_list:
+            print('Sorry, you picked an invalid time.')
+        else:
+            break
+
+    do_next = open_slot(service,date,time,username)
