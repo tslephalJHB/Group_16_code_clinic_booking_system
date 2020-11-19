@@ -16,7 +16,7 @@ SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
 def main():
     
-    service,token.pickle = start_clinic.service()
+    service = start_clinic.service()
     # Call the Calendar API
     now_n =  datetime.datetime.today()
     print(now_n)
