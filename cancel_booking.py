@@ -7,6 +7,9 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google.auth.transport.requests import Request
 from make_a_booking import create_Service, convert_to_RFC_datetime
+import setup as config
+
+username = config.get_users_home_dir()
 
 CLIENT_SECRET_FILE = 'credentials.json'
 API_NAME = 'calendar'
