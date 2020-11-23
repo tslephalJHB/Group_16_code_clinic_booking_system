@@ -6,6 +6,9 @@ from googleapiclient.http import MediaFileUpload
 from google.auth.transport.requests import Request
 import datetime
 import pickle
+import setup as config
+
+username = config.get_users_home_dir()
 
 CLIENT_SECRET_FILE = 'credentials.json'
 API_NAME = 'calendar'

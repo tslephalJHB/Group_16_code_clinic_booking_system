@@ -8,6 +8,9 @@ from googleapiclient.http import MediaFileUpload
 from google.auth.transport.requests import Request
 from make_a_booking import create_Service, convert_to_RFC_datetime,get_calendar,is_int
 import start
+import setup as config
+
+username = config.get_users_home_dir()
 
 service = start.service
 

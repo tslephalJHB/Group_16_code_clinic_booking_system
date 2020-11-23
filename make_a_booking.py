@@ -7,6 +7,9 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google.auth.transport.requests import Request
 from datetime import timedelta
+import setup as config
+
+username = config.get_users_home_dir()
 
 
 CLIENT_SECRET_FILE = 'credentials.json'
