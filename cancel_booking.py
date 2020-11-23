@@ -58,6 +58,8 @@ def cancel_booking(service, eventId, start_dateTime, end_dateTime, creatorId):
     return True
     
 if __name__ == "__main__":
+    service = create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
+    get_calendar(service)
     email = username+'@student.wethinkcode.co.za'
     event_list = open('events.csv', 'r').readlines()
     open_slots = \
