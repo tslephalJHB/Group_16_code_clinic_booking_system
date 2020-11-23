@@ -48,6 +48,7 @@ else
     cp $calendar_file ~/$BUILD_PATH
     cp $book_slot ~/$BUILD_PATH
     cp start.py ~/$BUILD_PATH
+    cp ~/setup.py ~/$BUILD_PATH
     cd ; cd $BUILD_PATH
 fi
 
