@@ -4,10 +4,10 @@ set -e
 ROOT_PATH=~
 BUILD_PATH=group_project
 VENV=code_clinic
-filename=make_a_booking.py
+filename=create_slot.py
 help_file=help.txt
-calendar_file=view_calender.py
-book_slot=update_event.py
+calendar_file=view_calendar.py
+book_slot=book_slot.py
 
 
 cd ~/$BUILD_PATH
@@ -49,6 +49,7 @@ else
     cp $book_slot ~/$BUILD_PATH
     cp start.py ~/$BUILD_PATH
     cp ~/setup.py ~/$BUILD_PATH
+    cp configure.py ~/$BUILD_PATH
     cd ; cd $BUILD_PATH
 fi
 
