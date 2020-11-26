@@ -148,12 +148,12 @@ def start_code_clinics():
             if status == 'volunteer':
                 print(f"\nInvalid command for volunteer: {command}")
             else:
-                os.system("python3 update_event.py")
+                os.system("python3 book_slot.py")
             status_ = set_status(status)
 
         elif command == "view calendar":
             os.system("clear")
-            os.system("python3 view_calender.py")
+            os.system("python3 view_calendar.py")
             status_ = set_status(status)
 
         elif command == "help":
@@ -166,7 +166,7 @@ def start_code_clinics():
             if status == 'student':
                 print(f"\nInvalid command for student: {command}")
             else:
-                os.system("python3 make_a_booking.py")
+                os.system("python3 create_slot.py")
             status_ = set_status(status)
 
         elif command == 'off':
