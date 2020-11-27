@@ -6,7 +6,7 @@ from google_auth_oauthlib.flow import Flow, InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google.auth.transport.requests import Request
-from make_a_booking import create_Service, convert_to_RFC_datetime,get_calendar,is_int
+from create_slot import create_Service, convert_to_RFC_datetime,get_calendar,is_int
 import start
 import setup as config
 import configure
@@ -16,7 +16,7 @@ import configure
 year,month,day = configure.get_date()
 
 username = config.get_users_home_dir()
-
+username = username.strip()
 service = start.service
 
 CLIENT_SECRET_FILE = 'credentials.json'
@@ -29,6 +29,7 @@ def book_slot(service, username, eventId, start_dateTime, end_dateTime, creatorI
     print('Booking Open Slot...')
     organizer = creatorId.strip()
     email = username+'@student.wethinkcode.co.za'
+    print(email)
     event_request_body = {
         'start':{
             'dateTime': start_dateTime,

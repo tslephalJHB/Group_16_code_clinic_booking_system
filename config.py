@@ -7,6 +7,8 @@ email = setup.get_email(user_name,'')
 year = 0
 month = 0
 day = 0
+hour = 0
+minutes = 0
 months = ['Jan','Feb','Mar','Apr','Mar','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 something = []
 # create parser
@@ -21,6 +23,8 @@ parser.add_argument("-m", type=str, required=True, metavar='module',
 help='Expects a module to handle')
 parser.add_argument("-d", type=str, required=True, metavar='date', 
 help='Expects a date: yyyy-mm-dd')
+parser.add_argument("-t", type=str, required=True, metavar='time', 
+help='Expects time: hh-mm')
  
 # parse the arguments
 args = parser.parse_args()
@@ -29,18 +33,19 @@ r = args.r
 d = args.d
 m = args.m
 n = args.n
+t = args.t
 print(f'Hello {args.n}, this is your email: {email}')
 # get the arguments value
 if args.r == 'student' and args.m == 'make_a_booking':
     print("Invalid module for student")
 elif args.r == 'student':
     os.chdir(f'/goinfre/{user_name.strip()}/group_project')
-    os.system(f'python3 {args.m}.py -r {r} -d {d} -n {n} -m {m}')
+    os.system(f'python3 {args.m}.py -r {r} -d {d} -n {n} -m {m} -t {t}')
 elif args.r == 'volunteer' and args.m == 'update_slot':
     print("Invalid module for volunteer")
 elif args.r == 'volunteer':
     os.chdir(f'/goinfre/{user_name.strip()}/group_project')
-    os.system(f'python3 {args.m}.py -r {r} -d {d} -n {n} -m {m}')
+    os.system(f'python3 {args.m}.py -r {r} -d {d} -n {n} -m {m} -t {t}')
 # print(something)
 def get_date():
     for item in args.d.split('-'):
@@ -52,3 +57,10 @@ def get_date():
         # month = months[month-1]
     print(f"This is your year: {year}\nThis is you month: {month}\nThis is your day: {day}")
     return year,month,day
+
+def get_time():
+    for item in t.split():
+        if item.isdigit() and len(item) == 2 and t.split()[0] <= 24 and t.split()[1] <= 59:
+            hour = t.split()[0]
+            minutes = t.split()[1]
+    return hour,minutes

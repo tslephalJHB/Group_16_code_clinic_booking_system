@@ -13,9 +13,9 @@ import configure
 # test.args
 
 year,month,day = configure.get_date()
+hour,minutes = configure.get_time()
 username = config.get_users_home_dir()
-print(username)
-print(year,month,day)
+username = username.strip()
 
 CLIENT_SECRET_FILE = 'credentials.json'
 API_NAME = 'calendar'
@@ -107,7 +107,7 @@ def is_int(value):
         return False
 
 
-def open_slot(service,year,month,day,time,username):
+def open_slot(service,year,month,day,hour,minutes,username):
     """The function opens a slot for the volunteer.
     """
     print('Opening a slot...')
@@ -117,10 +117,10 @@ def open_slot(service,year,month,day,time,username):
     # year = int(date[:4])
     # month = int(date[4:6])
     # date = int(date[6:8])
-    hour = int(time[:2])
-    minute = int(time[2:])
+    #hour = int(time[:2])
+    #minute = int(time[2:])
     end_hour = hour
-    end_minute = minute + 30
+    end_minute = minutes + 30
 
     if end_minute > 60:
         end_hour = hour + 1
@@ -128,7 +128,7 @@ def open_slot(service,year,month,day,time,username):
     
     event_request_body = {
         'start':{
-            'dateTime': convert_to_RFC_datetime(year, month, day, hour + hour_adjustment, minute),
+            'dateTime': convert_to_RFC_datetime(year, month, day, hour + hour_adjustment, minutes),
             'timeZone': 'Africa/Johannesburg'
         },
         'end':{
@@ -192,13 +192,9 @@ if __name__ == "__main__":
         print(str(count)+'. '+event[1][11:16])
         count += 1
 
-    while True:
-        time = input("Input start time for the slot[hhmm]: ")
-        pseudo_time = time[:2]+':'+time[2:]
+    #while True:
+        #time = input("Input start time for the slot[hhmm]: ")
+    pseudo_time = str(hour)+':'+str(minutes)
+            #break
 
-        if not is_int(time) or pseudo_time in open_list:
-            print('Sorry, you picked an invalid time.')
-        else:
-            break
-
-    do_next = open_slot(service,year,month,day,time,username)
+    do_next = open_slot(service,year,month,day,hour,minutes,username)
