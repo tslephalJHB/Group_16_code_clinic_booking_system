@@ -10,6 +10,7 @@ from make_a_booking import create_Service, convert_to_RFC_datetime
 import setup as config
 
 username = config.get_users_home_dir()
+hour,minutes = configure.get_time()
 
 CLIENT_SECRET_FILE = 'credentials.json'
 API_NAME = 'calendar'
@@ -19,13 +20,16 @@ SCOPES = ['https://www.googleapis.com/auth/calendar']
 def cancel_booking(service, eventId):
     print('Deleting booking...')
     service.events().delete(calendarId='primary', eventId=eventId).execute()
-
     print('Booking deleted.')
     return True
     
 if __name__ == "__main__":
     service = create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
     get_calendar(service)
+
+    date = str(year)+'-'+str(month)+'-'+str(day)
+    time = str(hour)+':'+str(minutes)
+
     email = username+'@student.wethinkcode.co.za'
     event_list = open('events.csv', 'r').readlines()
     open_slots = [event for event in event_list if (time in event and date in event)]
@@ -34,7 +38,5 @@ if __name__ == "__main__":
         print('No booked slots available for user')
 
     else:
-        for event in open_slots:
-            if 'Book Slot' in event:
-                do_next = cancel_booking(service, event[3])
+        cancel_booking(service, event[3]) for event in open_slots if 'Book Slot' in event
     
