@@ -1,0 +1,136 @@
+from pprint import pprint
+import pickle
+import datetime
+import os
+from google_auth_oauthlib.flow import Flow, InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+from google.auth.transport.requests import Request
+from create_slot import create_Service, convert_to_RFC_datetime,get_calendar,is_int
+import start
+import setup as config
+import configure
+
+# test.args
+
+year,month,day = configure.get_date()
+hour,minutes = configure.get_time()
+
+username = config.get_users_home_dir()
+username = username.strip()
+service = start.service
+
+CLIENT_SECRET_FILE = 'credentials.json'
+API_NAME = 'calendar'
+API_VERSION = 'v3'
+SCOPES = ['https://www.googleapis.com/auth/calendar']
+
+
+def book_slot(service, username, eventId, date, time, creatorId):
+    print('Booking Open Slot...')
+    organizer = creatorId.strip()
+
+    email = username+'@student.wethinkcode.co.za'
+    hour_adjustment = -2
+    year,month,date = date.split('-')
+    hour,minutes = time.split('-')
+    end_hour = hour
+    end_minute = minutes + 30
+
+    if end_minute > 60:
+        end_hour = hour + 1
+        end_minute = (minute + 30) - 60
+    
+    event_request_body = {
+        'start':{
+            'dateTime': convert_to_RFC_datetime(year, month, day, hour + hour_adjustment, minutes),
+            'timeZone': 'Africa/Johannesburg'
+        },
+        'end':{
+            'dateTime': convert_to_RFC_datetime(year, month, day, end_hour + hour_adjustment, end_minute),
+            'timeZone': 'Africa/Johannesburg'
+        },
+        'conferenceData': {
+            'createRequest': {
+                'requestId': 'hangoutsMeet'
+                },
+        },
+        'summary': 'Booked Slot',
+        'description': 'one-on-one sessions with a more experienced person who can advise on the coding problem at hand',
+        'colorId': 5,
+        'transparency': 'opaque',
+        'visibility': 'public',
+        'location': 'Johannesburg, GP',
+        'attendees': [
+            {
+                'email': email,
+                'responseStatus': 'accepted'
+                },
+            {
+                'email': 'cliniccoding@gmail.com',
+                'responseStatus': 'accepted'
+                },
+            {
+                'email': organizer,
+                'responseStatus': 'accepted'
+                }
+        ],
+    }
+
+    maxAttendees = 3
+    sendNotification = True
+    sendUpdate = 'none'
+    supportsAttachments = True
+
+    response = service.events().insert(
+        calendarId="primary",
+        conferenceDataVersion=1,
+        maxAttendees=maxAttendees,
+        sendUpdates="all",
+        supportsAttachments=supportsAttachments,
+        body=event_request_body
+    ).execute()
+
+    print('Slot booking successful.')
+    service.events().delete(calendarId='cliniccoding@gmail.com', eventId=eventId).execute()
+    return True
+
+if __name__ == "__main__":
+    service = create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
+    get_calendar(service)
+    # date = input('Please enter date: ')
+    # year = date[:4]
+    # month = date[4:6]
+    # date = date[6:8]
+    date = str(year)+'-'+str(month)+'-'+str(day)
+    time = str(hour)+':'+str(minutes)
+
+    event_list = open('events.csv', 'r').readlines()
+    open_slots = [event for event in event_list if (time in event and date in event)]
+
+    count = 0
+    for event in open_slots:
+        if 'Booked Slot' in event:
+            print("Slot already booked")
+            count = 1
+    
+    if count == 0:
+        do_next = book_slot(service, username, open_slots[0][3], date, time, open_slots[0][4])
+    # open_list = []
+    # count = 1
+
+    # print('Available slots:')
+    # for event in open_slots:
+    #     event = event.split(',')
+    #     open_list.append(event)
+    #     print(str(count)+'. '+event[0]+' '+event[1][:10]+' '+event[1][11:16])
+    #     count += 1
+
+    # while True:    
+    #     slot = int(input('Select preferred slot: '))
+    #     if not is_int(slot) or slot not in range(1, len(open_list)+1):
+    #         print(f'Sorry, you picked an invalid slot. Please select 1 - {len(open_list)}')
+    #     else:
+    #         break
+
+    

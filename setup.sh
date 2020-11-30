@@ -4,125 +4,61 @@ set -e
 ROOT_PATH=~
 BUILD_PATH=group_project
 VENV=code_clinic
-filename=startup.py
-
-echo $ROOT_PATH
-
-read -p 'Enter your wtc username: ' reply
-
-user=$(who | cut -d ' ' -f 1)
-if [ $user == '$reply' ]
-then
-	email=${grep 'username' ~/.config/wtc/config.yml | cut -d ' ' -f 2}
-else
-	echo 'Email'
-	email=${reply}@student.wethinkcode.co.za
-fi
-echo $email
-
-campuses='jhb johannesburg'
-
-read -p 'enter your campus: ' campus
-
-for value in $campuses
-do
-	if [ $value = $campus ]
-	then
-		echo 'Campus'
-		your_campus=$campus
-	fi
-done
-
-echo $your_campus
-
-cd
-
-touch .config.group_16
-
-echo -e ''email = ' '$email'\n'campus = ' '$campus'\n'system = ' 'Linux-Debian'' > .config.group_16
+filename=create_slot.py
+help_file=help.txt
+calendar_file=view_calendar.py
+book_slot=book_slot.py
 
 
-if [ -d "$BUILD_PATH" ] 
-then
-    echo "$BUILD_PATH exists." 
-else
-    echo "Error: $BUILD_PATH does not exists."
-    echo "Creating your directory"
-    mkdir ./$BUILD_PATH
-    echo "$BUILD_PATH created"
-fi
-
-cd $BUILD_PATH
+cd ~/$BUILD_PATH
 
 if [ -d "$VENV" ] 
 then
-    echo "$VENV virtual environment exists." 
+    echo 
 else
-    echo "Error: $BUILD_PATH does not exists."
-    echo "Creating your virtual environment"
     python3 -m venv $VENV
-    echo "Finished creating $VENV environment"
 fi
 
 source $VENV/bin/activate
 
-echo "Started the venv"
-
-pip install google-api-python-client --quiet
+if pip search google-api-python-client --quiet
+then
+	echo 
+else
+	pip install google-api-python-client --quiet
+fi
 
 file=$(find ~ -name "credentials.json")
 
-echo $file
-
 if [ -f "credentials.json" ] 
 then
-    echo "credentials.json exists." 
+    echo  
 else
-    echo "Error: credentials.json does not exists."
-    echo $file
-    echo "Fetching credentials.json"
     cp $file ~/$BUILD_PATH
-    echo "Fetched credentials.json"
-    echo "Back at $ROOT_PATH/$BUILD_PATH"
 fi
-echo line 91
 
-if [ -f "$filename" ] 
+if [[ -f "$filename" && -f "start.py" && -f "$book_slot" && -f "$calendar_file" ]] 
 then
-    echo "$filename exists." 
+    echo  
 else
-    echo "Error: $filename does not exists."
-    echo "Fetching $filename"
+    echo 
+    echo 
     cd ; cd Group_16_code_clinic_booking_system
-    cp make_a_booking.py $filename
     cp $filename ~/$BUILD_PATH
-    echo "Fetched $filename"
+    cp $calendar_file ~/$BUILD_PATH
+    cp $book_slot ~/$BUILD_PATH
+    cp start.py ~/$BUILD_PATH
+    cp ~/setup.py ~/$BUILD_PATH
+    cp configure.py ~/$BUILD_PATH
     cd ; cd $BUILD_PATH
-    echo "Back at $ROOT_PATH/$BUILD_PATH"
 fi
 
-pkg="google_auth_oauthlib"
+pkg='google-auth-oauthli'
 
 if pip search $pkg --quiet
 then
-    echo "$pkg installed"
+    echo 
 else
-    echo "$pkg NOT installed"
     pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib --quiet
 fi
-
-echo "Beginning students calendar sync"
-
-python3 $filename
-
-echo "Done with calendar sync"
-
-echo "Removing token for new calendar sync on startup"
-
-rm token.pickle
-
-echo "Token removed"
-
-cd
-
-echo -e ''alias clinic=''clear; ~/./setup.sh'' >> .zshrc
+clear
