@@ -92,16 +92,11 @@ def book_slot(service, username, eventId, date, time, creatorId):
     ).execute()
 
     print('Slot booking successful.')
-    service.events().delete(calendarId='cliniccoding@gmail.com', eventId=eventId).execute()
     return True
 
 if __name__ == "__main__":
     service = create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
     get_calendar(service)
-    # date = input('Please enter date: ')
-    # year = date[:4]
-    # month = date[4:6]
-    # date = date[6:8]
     date = str(year)+'-'+str(month)+'-'+str(day)
     time = str(hour)+':'+str(minutes)
 
@@ -116,21 +111,3 @@ if __name__ == "__main__":
     
     if count == 0:
         do_next = book_slot(service, username, open_slots[0][3], date, time, open_slots[0][4])
-    # open_list = []
-    # count = 1
-
-    # print('Available slots:')
-    # for event in open_slots:
-    #     event = event.split(',')
-    #     open_list.append(event)
-    #     print(str(count)+'. '+event[0]+' '+event[1][:10]+' '+event[1][11:16])
-    #     count += 1
-
-    # while True:    
-    #     slot = int(input('Select preferred slot: '))
-    #     if not is_int(slot) or slot not in range(1, len(open_list)+1):
-    #         print(f'Sorry, you picked an invalid slot. Please select 1 - {len(open_list)}')
-    #     else:
-    #         break
-
-    
