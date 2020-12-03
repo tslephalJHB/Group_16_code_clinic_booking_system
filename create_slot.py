@@ -114,11 +114,6 @@ def open_slot(service,year,month,day,hour,minutes,username):
 
     email = username+'@student.wethinkcode.co.za'
     hour_adjustment = -2
-    # year = int(date[:4])
-    # month = int(date[4:6])
-    # date = int(date[6:8])
-    #hour = int(time[:2])
-    #minute = int(time[2:])
     end_hour = hour
     end_minute = minutes + 30
 
@@ -173,28 +168,35 @@ def open_slot(service,year,month,day,hour,minutes,username):
 if __name__ == "__main__":
     service = create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
     get_calendar(service)
-    # date = get_date()
-    # year = date[:4]
-    # month = date[4:6]
-    # pseudo_date = date[6:8]
-    pseudodate = str(year)+'-'+str(month)+'-'+str(day)
 
+    date = str(year)+'-'+str(month)+'-'+str(day)
+    time = str(hour)+':'+str(minutes)
+
+    #Getting time slot will end
+    end_hour = hour
+    end_minute = minutes + 30
+    if end_minute > 60:
+        end_hour = hour + 1
+        end_minute = (minute + 30) - 60
+
+    #Getting events for the date
     event_list = open('events.csv', 'r').readlines()
-    open_slots = [event for event in event_list if pseudodate in event]
+    open_slots = [event for event in event_list if date in event]
 
-    open_list = []
-    count = 1
-
-    print('You can not choose the following times:')
+    count = 0
     for event in open_slots:
-        event = event.split(',')
-        open_list.append(event[1][11:16])
-        print(str(count)+'. '+event[1][11:16])
-        count += 1
+        #Getting start time of event
+        event_time = event[1][11:16]
+        event_hour = event_time[:2]
+        event_minute = event_time[3:]
+        
+        if (hour == int(event_hour) and int(event_minute) in range(minutes,end_minute))\
+            or (hour != end_hour and hour == int(event_hour) and 
+            int(event_minute) in range(minutes,59))\
+            or (end_hour == int(event_hour) and int(event_minute) in range(0,end_minute)):
+            count = 1    
 
-    #while True:
-        #time = input("Input start time for the slot[hhmm]: ")
-    pseudo_time = str(hour)+':'+str(minutes)
-            #break
-
-    do_next = open_slot(service,year,month,day,hour,minutes,username)
+    if count == 0:
+        do_next = open_slot(service,year,month,day,hour,minutes,username)
+    else:
+        print("Slot already opened")
