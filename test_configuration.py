@@ -14,15 +14,16 @@ class TestCase(unittest.TestCase):
 
     maxDiff = None
 
-    @patch("sys.stdin", StringIO(' \nhurambau'))
+    @patch("sys.stdin", StringIO(' \nfapatel'))
     def test_get_users_home_dir(self):
 
-        self.assertEqual(setup.get_users_home_dir(),'hurambau')
-        self.assertEqual(setup.get_users_home_dir(),'hurambau')
+        self.assertEqual(setup.get_users_home_dir(),'fapatel')
+        self.assertEqual(setup.get_users_home_dir(),'fapatel')
 
 
     @patch("sys.stdin", StringIO('JhB\nJHB\ncape town\nJohannesburg'))
     def test_get_campus(self):
+
 
         campus = ['jhb','JHB','JOHANNESBURG','Johannesburg','johannesburg']
 
@@ -35,7 +36,7 @@ class TestCase(unittest.TestCase):
 
 
         user_name = ''
-        user = 'hurambau'
+        user = 'fapatel'
         self.assertEqual(setup.get_email(user_name,user),f'{user}@student.wethinkcode.co.za')
         user_name = 'Faheemah'
         self.assertEqual(setup.get_email(user_name,user),f'{user_name}@student.wethinkcode.co.za')
@@ -104,9 +105,9 @@ SWITCH: To switch between Student and Volunteer options
 
         args = ['configure.py', '-d', '2020-12-08']
         sys.argv = args
-        print(args)
+        # print(args)
         # self.assertEqual(sys.argv,configure.get_time())
-        self.assertEqual(configure.get_date(),sys.argv[2])
+        self.assertEqual(configure.get_date(args),sys.argv[2])
         # sys.stdout = StringIO()
         # cli.check_arguments(args=['cli.py', 'help'])
         # print(cli.check_arguments(args=['cli.py', 'help']))

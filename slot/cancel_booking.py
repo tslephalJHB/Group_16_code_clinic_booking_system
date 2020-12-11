@@ -21,6 +21,9 @@ API_VERSION = 'v3'
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 def cancel_booking(service, eventId):
+    """
+    Function cancels the booking.
+    """
     print('Deleting booking...')
     service.events().delete(calendarId='primary', eventId=eventId).execute()
     print('Booking deleted.')
@@ -44,5 +47,5 @@ if __name__ == "__main__":
     else:
         for event in open_slots:
                if 'Booked Slot' in event:
-                      cancel_booking(service, event[3]) 
+                      cancel_booking(service, event.split(',')[3]) 
     

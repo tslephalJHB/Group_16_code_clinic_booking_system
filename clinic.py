@@ -5,6 +5,9 @@ configure = dynamic_import('config.configure')
 
 
 def main():
+    """
+    Function takes information from the commandline.
+    """
     args = configure.set_parser()
     t = args.t
     r = args.r
