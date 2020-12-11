@@ -27,7 +27,13 @@ def set_parser():
     parser.add_argument("-n", type=str, required=False, metavar='name',
     help='Checks for name of person')
     parser.add_argument("-m", type=str, required=False, metavar='module',
-    help='Expects a module to handle')
+    help="""Expects a module to handle:
+- view_calendar
+- create_slot
+- book_slot
+- cancel_slot
+- cancel_booking
+""")
     parser.add_argument("-d", type=str, required=False, metavar='date',
     help='Expects a date: yyyy-mm-dd',default='2020-10-10')
     parser.add_argument("-t", type=str, required=False, metavar='time',
