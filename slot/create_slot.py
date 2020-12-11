@@ -10,12 +10,6 @@ from datetime import timedelta
 import setup as config
 import configure
 
-args = configure.set_parser()
-
-year,month,day = configure.get_date(args)
-hour,minutes = configure.get_time(args)
-username = config.get_users_home_dir()
-username = username.strip()
 
 CLIENT_SECRET_FILE = 'credentials.json'
 API_NAME = 'calendar'
@@ -24,7 +18,7 @@ SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 
 def get_calendar(service):
-
+    
     now_n =  datetime.datetime.today()
     now = now_n.isoformat() + 'Z' # 'Z' indicates UTC time
     end_date_n= now_n + datetime.timedelta(7)
@@ -37,16 +31,16 @@ def get_calendar(service):
     # Saving events into a pickle file
     with open("events_clinic.pkl","wb") as cal_clinic_events:
         pickle.dump(events,cal_clinic_events)
-
+    
     # Load pickle files
     with open("events_clinic.pkl","rb") as cal_clinic_events:
         new_clinic_data = pickle.load(cal_clinic_events)
 
     slot_list = open('events.csv', 'w')
-
+    
     for event in new_clinic_data:
         slot_list.write(event['summary']+','+event['start']['dateTime']+','+event['end']['dateTime']+','+event['id']+','+event['creator']['email']+'\n')
-
+    
     slot_list.close()
 
 
@@ -55,12 +49,12 @@ def create_Service(client_secret_file, api_name, api_version, *scopes):
     API_SERVICE_NAME = api_name
     API_VERSION = api_version
     SCOPES = [scope for scope in scopes[0]]
-
+    
     cred = None
 
     pickle_file = f'token_{API_SERVICE_NAME}_{API_VERSION}.pickle'
     # print(pickle_file)
-
+    
     if os.path.exists(pickle_file):
         with open(pickle_file, 'rb') as token:
             cred = pickle.load(token)
@@ -84,15 +78,9 @@ def create_Service(client_secret_file, api_name, api_version, *scopes):
         return None
 
 
-def convert_to_RFC_datetime(year=1900, month=1, day=1, hour=0, minutes=0):
-    dt = datetime.datetime(int(year), int(month), int(day), hour, int(minutes), 0).isoformat() + 'Z'
+def convert_to_RFC_datetime(year=1900, month=1, day=1, hour=0, minute=0):
+    dt = datetime.datetime(year, month, day, hour, minute, 0).isoformat() + 'Z'
     return dt
-
-
-def get_date():
-    date = input('Please enter date[yyyymmdd]: ')
-    time = input('Please enter time[hhmm]: ')
-    return date,time
 
 
 def is_int(value):
@@ -116,21 +104,19 @@ def open_slot(service,year,month,day,hour,minutes,username):
     email = username+'@student.wethinkcode.co.za'
     hour_adjustment = -2
     end_hour = hour
-    end_minute = int(minutes) + 30
-    _time = int(hour) + hour_adjustment
-    time_ = int(end_hour) + hour_adjustment
+    end_minute = minutes + 30
 
     if end_minute > 60:
         end_hour = hour + 1
-        end_minute = (int(minutes) + 30) - 60
-
+        end_minute = (minute + 30) - 60
+    
     event_request_body = {
         'start':{
-            'dateTime': convert_to_RFC_datetime(year, month, int(day), _time, minutes),
+            'dateTime': convert_to_RFC_datetime(year, month, day, hour + hour_adjustment, minutes),
             'timeZone': 'Africa/Johannesburg'
         },
         'end':{
-            'dateTime': convert_to_RFC_datetime(year, month, int(day), time_, end_minute),
+            'dateTime': convert_to_RFC_datetime(year, month, day, end_hour + hour_adjustment, end_minute),
             'timeZone': 'Africa/Johannesburg'
         },
         'conferenceData': {
@@ -169,26 +155,31 @@ def open_slot(service,year,month,day,hour,minutes,username):
 
 
 if __name__ == "__main__":
+    # test.args
+    args = configure.set_parser()
+    year,month,day = configure.get_date(args)
+    hour,minutes = configure.get_time(args)
+    year = int(year)
+    month = int(month)
+    day = int(day)
+    hour = int(hour)
+    minutes = int(minutes)
+
+    username = config.get_users_home_dir()
+    username = username.strip()
+
     service = create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
     get_calendar(service)
-
-    if len(str(year)) == 1:
-        date,time = get_date()
-        year = date[:4]
-        month = date[4:6]
-        day = date[6:8]
-        hour = time[:2]
-        minutes = time[2:]
 
     date = str(year)+'-'+str(month)+'-'+str(day)
     time = str(hour)+':'+str(minutes)
 
     #Getting time slot will end
     end_hour = hour
-    end_minute = int(minutes) + 30
+    end_minute = minutes + 30
     if end_minute > 60:
         end_hour = hour + 1
-        end_minute = (minutes + 30) - 60
+        end_minute = (minute + 30) - 60
 
     #Getting events for the date
     event_list = open('events.csv', 'r').readlines()
@@ -198,13 +189,15 @@ if __name__ == "__main__":
     for event in open_slots:
         #Getting start time of event
         event_time = event.split(',')[1][11:16]
-        # print(event_time)
-        event_hour = event_time[:2]
-        event_minute = event_time[3:]
-        # print(str(hour)+':'+str(minutes),ev)
-        if event_time == str(hour)+':'+str(minutes):
-            # print('in Here')
-            count = 1
+        event_hour = int(event_time[:2])
+        event_minute = int(event_time[3:])
+        
+        #Checking if slot is open
+        if (hour == event_hour and event_minute in range(minutes,end_minute))\
+            or (hour != end_hour and hour == event_hour and 
+            event_minute in range(minutes,59))\
+            or (end_hour == event_hour and event_minute in range(0,end_minute)):
+            count = 1    
 
     if count == 0:
         do_next = open_slot(service,year,month,day,hour,minutes,username)
