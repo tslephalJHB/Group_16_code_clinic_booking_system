@@ -25,7 +25,6 @@ SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 def get_calendar(service):
     """Function retrieves the calendar events and stores them in a .csv file.
-
     Args:
         service (list): Http Request for the user
     """
