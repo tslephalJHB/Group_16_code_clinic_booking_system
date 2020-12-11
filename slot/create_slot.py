@@ -18,7 +18,11 @@ SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 
 def get_calendar(service):
-    
+    """Function retrieves the calendar events and stores them in a .csv file.
+    Args:
+        service (list): Http Request for the user
+    """
+
     now_n =  datetime.datetime.today()
     now = now_n.isoformat() + 'Z' # 'Z' indicates UTC time
     end_date_n= now_n + datetime.timedelta(7)
@@ -45,6 +49,16 @@ def get_calendar(service):
 
 
 def create_Service(client_secret_file, api_name, api_version, *scopes):
+    """Function makes an http Request to Google
+
+    Args:
+        client_secret_file (str): Credentionals of the user
+        api_name (ste): Google API used
+        api_version (str): version of the API
+
+    Returns:
+        list: Http request
+    """
     CLIENT_SECRET_FILE = client_secret_file
     API_SERVICE_NAME = api_name
     API_VERSION = api_version
@@ -78,9 +92,32 @@ def create_Service(client_secret_file, api_name, api_version, *scopes):
         return None
 
 
-def convert_to_RFC_datetime(year=1900, month=1, day=1, hour=0, minute=0):
-    dt = datetime.datetime(year, month, day, hour, minute, 0).isoformat() + 'Z'
+def convert_to_RFC_datetime(year=1900, month=1, day=1, hour=0, minutes=0):
+    """converts the date and time to datetime object using GMT +2
+
+    Args:
+        year (int, optional): Year. Defaults to 1900.
+        month (int, optional): Month. Defaults to 1.
+        day (int, optional): Day. Defaults to 1.
+        hour (int, optional): Hour. Defaults to 0.
+        minutes (int, optional): Minutes. Defaults to 0.
+
+    Returns:
+        datetime: Converted time
+    """
+    dt = datetime.datetime(int(year), int(month), int(day), hour, int(minutes), 0).isoformat() + 'Z'
     return dt
+
+
+def get_date():
+    """Gets the time and date from the user
+
+    Returns:
+        tuple: Date and time
+    """
+    date = input('Please enter date[yyyymmdd]: ')
+    time = input('Please enter time[hhmm]: ')
+    return date,time
 
 
 def is_int(value):

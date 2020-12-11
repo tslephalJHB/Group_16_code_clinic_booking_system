@@ -21,6 +21,7 @@ def cancel_booking(service, eventId):
     print('Deleting booking...')
     service.events().delete(calendarId='primary', eventId=eventId).execute()
     print('Booking deleted.')
+    print(service)
     return True
     
 if __name__ == "__main__":

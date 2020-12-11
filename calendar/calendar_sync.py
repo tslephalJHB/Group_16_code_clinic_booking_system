@@ -25,6 +25,9 @@ SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
 
 def get_month():
+    """
+    Function gets the month.
+    """
     year,month,day = configure.get_date(args)
 
     months = ''
@@ -59,6 +62,9 @@ def get_month():
 
 
 def main():
+    """
+    This functions calls the api service which enables it to  print the calendars .
+    """
 
     service = start_clinic.service()
 

@@ -26,7 +26,20 @@ API_VERSION = 'v3'
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 
-def book_slot(service, username, eventId, date, time, creatorId):
+def book_slot(service, username, eventId, start_dateTime, end_dateTime, creatorId):
+    """Creates an open slot on a google calendar
+
+    Args:
+        service (list): Http Request for the user
+        username (str): Username
+        eventId (string): Hash code used for the open slot
+        start_dateTime (str): Start time of the slot
+        end_dateTime (str): End time of the slot
+        creatorId (str): email of the volunteer
+
+    Returns:
+        bool: True
+    """
     print('Booking Open Slot...')
     organizer = creatorId.strip()
 

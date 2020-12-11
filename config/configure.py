@@ -11,6 +11,14 @@ minutes = ''
 
 
 def set_parser():
+    """
+    This function uses argparse for commandline
+    -r = representation
+    -n = name
+    -m = module
+    -d = date
+    -t = time
+    """
 
     parser = argparse.ArgumentParser()
 
@@ -19,7 +27,13 @@ def set_parser():
     parser.add_argument("-n", type=str, required=False, metavar='name',
     help='Checks for name of person')
     parser.add_argument("-m", type=str, required=False, metavar='module',
-    help='Expects a module to handle')
+    help="""Expects a module to handle:
+- view_calendar
+- create_slot
+- book_slot
+- cancel_slot
+- cancel_booking
+""")
     parser.add_argument("-d", type=str, required=False, metavar='date',
     help='Expects a date: yyyy-mm-dd',default='2020-10-10')
     parser.add_argument("-t", type=str, required=False, metavar='time',
@@ -29,6 +43,11 @@ def set_parser():
 
 
 def main():
+    """
+    Function directs the person to the module they would like to access.
+    Makes sure the student cant create a slot.
+    Makes sure the volunteer cant book a slot. 
+    """
     args = set_parser()
 
     r = args.r
@@ -58,6 +77,9 @@ def main():
 
 
 def get_date(args):
+    """
+    Function takes the date from the commandline and returns the year,month,day.
+    """
     # d = []
     year = 0
     month = 0
@@ -70,6 +92,9 @@ def get_date(args):
 
 
 def get_time(args):
+    """
+    Function takes the date from the commandline and returns the hour and minutes.
+    """
     global hour
     global minutes
 

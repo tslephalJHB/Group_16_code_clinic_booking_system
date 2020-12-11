@@ -22,6 +22,9 @@ SCOPES = ['https://www.googleapis.com/auth/calendar',
 'https://www.googleapis.com/auth/calendar.readonly']
 
 def cancel_slot(service, eventId):
+    """
+    Function cancels a slot.
+    """
     print('Deleting a slot...')
     service.events().delete(calendarId='primary', eventId=eventId).execute()
     print('Slot deleted.')
@@ -45,4 +48,4 @@ if __name__ == "__main__":
     else:
         for event in open_slots:
            if 'Open Slot' in event:
-               cancel_slot(service, event[3])
+               cancel_slot(service, event.split(',')[3])

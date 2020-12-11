@@ -14,6 +14,11 @@ months = ['Jan','Feb','Mar','Apr','Mar','Jun','Jul','Aug','Sep','Oct','Nov','Dec
 something = []
 
 def get_email(args):
+
+    """
+    This function asks the users for their student/volunteer email address,
+    if they dont put in anything we get it for them and rerurn the email.
+    """
     # print(user)
     if not args.n:
         os.chdir(f'/goinfre/{user_name.strip()}/.config/wtc')
@@ -30,6 +35,14 @@ def get_email(args):
 
 
 def set_parser():
+    """
+    This function uses argparse for commandline
+    -r = representation
+    -n = name
+    -m = module
+    -d = date
+    -t = time
+    """
 
     parser = argparse.ArgumentParser()
 
@@ -48,6 +61,9 @@ def set_parser():
 
 
 def main():
+    """
+    This function goes into the selected module depending on what the student/volunteer would like to do
+    """
     args = set_parser()
     r = args.r
     d = args.d
@@ -81,6 +97,9 @@ def main():
 
 
 def get_date(args):
+    """
+    Function stores the date the user inputs and returns it.
+    """
     # d = []
     year = 0
     month = 0
@@ -93,6 +112,9 @@ def get_date(args):
 
 
 def get_time(args):
+    """
+    Function stores the time the user inputs and returns it.
+    """
     global hour
     global minutes
     # print(args.t)
