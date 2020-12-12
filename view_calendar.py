@@ -17,7 +17,7 @@ hour,minutes = configure.get_time()
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
-
+"""extract month"""
 def get_month():
     year,month,day = configure.get_date()
     if month == 1:
@@ -47,9 +47,9 @@ def get_month():
     return month
 
 def main():
-    
+    """call the api calendar"""
     service = start_clinic.service()
-    # Call the Calendar API
+   
     now_n =  datetime.datetime.today()
     print(now_n)
     now = now_n.isoformat() + 'Z' # 'Z' indicates UTC time
@@ -69,7 +69,7 @@ def main():
         pickle.dump(events,cal_events)
 
 
-
+    """if there are no events"""
     if not events:
         print('No upcoming events found.')
     
